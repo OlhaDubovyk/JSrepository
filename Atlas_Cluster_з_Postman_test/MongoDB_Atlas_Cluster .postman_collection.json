@@ -1,0 +1,452 @@
+{
+  "info": {
+    "_postman_id": "24527ffa-8e76-49df-ac4b-47e99caa8ed8",
+    "name": " MongoDB_Atlas_Cluster ",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48322808",
+    "_collection_link": "https://go.postman.co/collection/48322808-24527ffa-8e76-49df-ac4b-47e99caa8ed8?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Users Post",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"201 Created\", () => pm.response.to.have.status(201));\r",
+              "\r",
+              "const data = pm.response.json();\r",
+              "\r",
+              "const id = data?._id || data?.id || (Array.isArray(data) ? (data[0]?._id || data[0]?.id) : null);\r",
+              "\r",
+              "pm.test(\"POST: response has id\", () => {\r",
+              "  pm.expect(id, \"No _id/id in response\").to.be.ok;\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.set(\"userId\", id);\r",
+              "\r",
+              "pm.test(\"POST: userId stored\", () => {\r",
+              "  pm.expect(pm.collectionVariables.get(\"userId\")).to.eql(id);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"POST: has name/role/status\", () => {\r",
+              "  const obj = Array.isArray(data) ? data[0] : data;\r",
+              "  pm.expect(obj).to.have.property(\"name\");\r",
+              "  pm.expect(obj).to.have.property(\"role\");\r",
+              "  pm.expect(obj).to.have.property(\"status\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              "}\r",
+              "\r",
+              "if (data && data._id) {\r",
+              "  pm.collectionVariables.set(\"userId\", data._id);\r",
+              "}\r",
+              "\r",
+              "else if (Array.isArray(data) && data[0]?._id) {\r",
+              "  pm.collectionVariables.set(\"userId\", data[0]._id);\r",
+              "} else {\r",
+              "  throw new Error(\"No _id in POST response\");\r",
+              "}\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Olga\",\r\n  \"role\": \"QA\",\r\n  \"status\": \"training\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/Users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "Users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users Get",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+              "\r",
+              "const jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"GET all: response is array\", () => {\r",
+              "  pm.expect(jsonData).to.be.an(\"array\");\r",
+              "  pm.expect(jsonData.length, \"Empty array\").to.be.greaterThan(0);\r",
+              "});\r",
+              "\r",
+              "jsonData.forEach((user, i) => {\r",
+              "  pm.test(`User[${i}] has _id`, () => pm.expect(user).to.have.property(\"_id\"));\r",
+              "  pm.test(`User[${i}] has name`, () => pm.expect(user).to.have.property(\"name\"));\r",
+              "  pm.test(`User[${i}] has role`, () => pm.expect(user).to.have.property(\"role\"));\r",
+              "});\r",
+              "\r",
+              "\r",
+              "if (!pm.collectionVariables.get(\"userId\") && jsonData[0]?._id) {\r",
+              "  pm.collectionVariables.set(\"userId\", jsonData[0]._id);\r",
+              "}\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"active\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/Users\n",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "Users\n"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users Put",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const id = pm.collectionVariables.get(\"userId\");\r",
+              "\r",
+              "pm.test(\"userId exists\", () => {\r",
+              "  pm.expect(id, \"Run POST first to set userId\").to.be.ok;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"PUT: status 200/204\", () => {\r",
+              "  pm.expect([200, 204]).to.include(pm.response.code);\r",
+              "});\r",
+              "\r",
+              "const data = pm.response.json();\r",
+              "\r",
+              "pm.test(\"PUT: id not changed\", () => {\r",
+              "  pm.expect(data._id).to.eql(pm.collectionVariables.get(\"userId\"));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"PUT: fields updated\", () => {\r",
+              "  pm.expect(data).to.have.property(\"name\", \"Olga Updated\");\r",
+              "  pm.expect(data).to.have.property(\"role\", \"QA Automation\");\r",
+              "  pm.expect(data).to.have.property(\"status\", \"updated\");\r",
+              "  pm.expect(data).to.have.property(\"updatedAt\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"updated\",\r\n  \"role\": \"QA Automation\",\r\n  \"name\": \"Olga Updated\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/Users/{{userId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "Users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users DELETE",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "console.log(\"userId =\", pm.collectionVariables.get(\"userId\"));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"DELETE: 200 OK\", () => {\r",
+              "  pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "const json = pm.response.json();\r",
+              "\r",
+              "pm.test(\"DELETE: message present\", () => {\r",
+              "  pm.expect(json).to.be.an(\"object\");\r",
+              "  pm.expect(json).to.have.property(\"message\");\r",
+              "  pm.expect(json.message).to.be.a(\"string\").and.not.empty;\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"DELETE: deletedDocument has correct _id\", () => {\r",
+              "  pm.expect(json).to.have.property(\"deletedDocument\");\r",
+              "  pm.expect(json.deletedDocument).to.be.an(\"object\");\r",
+              "  pm.expect(json.deletedDocument).to.have.property(\"_id\");\r",
+              "  pm.expect(json.deletedDocument._id).to.eql(pm.collectionVariables.get(\"userId\"));\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.unset(\"userId\");\r",
+              "\r",
+              "pm.test(\"DELETE: userId removed from variables\", () => {\r",
+              "  pm.expect(pm.collectionVariables.get(\"userId\")).to.not.be.ok;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"updated\",\r\n  \"role\": \"QA Automation\",\r\n  \"name\": \"Olga Updated\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/Users/{{userId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "Users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users Get",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "console.log(\"userId =\", pm.collectionVariables.get(\"userId\"));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"GET all: 200 OK\", () => {\r",
+              "  pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "const data = pm.response.json();\r",
+              "\r",
+              "pm.test(\"GET all: response is array\", () => {\r",
+              "  pm.expect(data).to.be.an(\"array\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"GET all: each item has _id\", () => {\r",
+              "  data.forEach((u) => {\r",
+              "    pm.expect(u).to.be.an(\"object\");\r",
+              "    pm.expect(u).to.have.property(\"_id\");\r",
+              "    pm.expect(u._id).to.be.a(\"string\").and.not.empty;\r",
+              "  });\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"updated\",\r\n  \"role\": \"QA Automation\",\r\n  \"name\": \"Olga Updated\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/Users\n",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "Users\n"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "id",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    }
+  ]
+}
